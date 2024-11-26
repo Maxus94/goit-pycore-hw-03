@@ -16,11 +16,19 @@ def get_days_from_today():
 # print(f"difference {get_days_from_today()} days")
 
 def get_numbers_ticket(min, max, quantity):    
-    list = random.sample(range(min, max+1), quantity)    
-    list.sort()
-    return(list)
-
-# print(get_numbers_ticket(1, 36, 5))
+    error_message = ""
+    if (min >= 1) and (max <= 1000) and (min <= max) and (quantity <= max - min + 1):
+        list = random.sample(range(min, max+1), quantity)    
+        list.sort()    
+    else: 
+        if(min < 1):
+            error_message = error_message + "Error: min must be 1 or higher\n"            
+        if(max > 1000):
+            error_message = error_message + "Error: max must be smaller or equil to 1000\n"            
+        if(quantity > max - min + 1):
+            error_message = error_message + "Error: quantity can't be bigger than difference between max and min\n"            
+    return error_message or list
+# print(get_numbers_ticket(1, 101, 10))
 # print(get_numbers_ticket(1, 49, 6))
 
 def normalize_phone(phone_number):
@@ -49,13 +57,20 @@ def normalize_phone(phone_number):
 
 def get_upcoming_birthdays(users):
     current_date = datetime.today().date()
+    # current_date = datetime(year=2024, month=12, day=30).date()    
     congratulation_dates = []
     for user in users:
         user_birthday=datetime.strptime(user["birthday"], "%Y.%m.%d").date()
         user_birthday_this_year = datetime(year=current_date.year, month=user_birthday.month, day=user_birthday.day)
         user_birthday_this_year = user_birthday_this_year.date()
-        diff_dates = user_birthday_this_year - current_date
-        diff_dates = diff_dates.days
+        if (current_date.month == 12 and user_birthday_this_year.month == 1):            
+            if (current_date.year % 4 == 0):
+                diff_dates = user_birthday_this_year - current_date + timedelta(days = 366)
+            else: 
+                diff_dates = user_birthday_this_year - current_date + timedelta(days = 365)
+        else:
+            diff_dates = user_birthday_this_year - current_date
+        diff_dates = diff_dates.days        
         if (diff_dates >= 0) and (diff_dates <= 7):            
             congratulation_date = user_birthday_this_year
             if(user_birthday_this_year.weekday() == 5):
@@ -69,15 +84,19 @@ def get_upcoming_birthdays(users):
 
 
 
-# users=[{"name": "Maxim", "birthday": "1973.11.29"},
-#     {"name": "TT", "birthday": "1920.11.15"},
-#     {"name": "Nina", "birthday": "1946.11.08"},
-#     {"name": "T", "birthday": "2018.11.24"},
-#     {"name": "Inna", "birthday": "1985.11.26"},
-#     {"name": "Ya", "birthday": "1973.11.30"},
-#     {"name": "Yu", "birthday": "1973.12.03"},
-#     {"name": "M", "birthday": "1915.12.03"},
-#     {"name": "Ja", "birthday": "1912.11.28"},
-#     {"name": "Vika", "birthday": "1985.11.23"}]
+users=[{"name": "Maxim", "birthday": "1973.11.29"},
+    {"name": "TT", "birthday": "1920.11.15"},
+    {"name": "Nina", "birthday": "1946.11.08"},
+    {"name": "T", "birthday": "2018.11.24"},
+    {"name": "Inna", "birthday": "1985.11.26"},
+    {"name": "Ya", "birthday": "1973.11.30"},
+    {"name": "Yu", "birthday": "1973.12.03"},
+    {"name": "M", "birthday": "1915.12.03"},
+    {"name": "Ja", "birthday": "1912.11.28"},
+    {"name": "Ju", "birthday": "1947.01.04"},
+    {"name": "Al", "birthday": "1977.01.01"},
+    {"name": "Ol", "birthday": "1972.01.02"},
+    {"name": "Olg", "birthday": "1971.12.31"},
+    {"name": "Vika", "birthday": "1985.11.23"}]
 
-# print(get_upcoming_birthdays(users))
+print(get_upcoming_birthdays(users))
